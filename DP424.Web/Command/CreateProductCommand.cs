@@ -1,17 +1,19 @@
-﻿using DP424.Application.UnitOfWork;
-using DP424.Domain.Dtos;
+﻿using DP424.Application.Repo.Implementation;
+using DP424.Domain.Prototype;
 
 namespace DP424.Web.Command
 {
+    // Concrete Command
     // Command Pattern : Execute create product
     public class CreateProductCommand : ICommand
     {
         private readonly ProductPostDto _request;
-        private readonly IUnitOfWork _uow;
-        public CreateProductCommand(ProductPostDto request, IUnitOfWork uow)
+        
+        private readonly ProductRepository repo;
+        public CreateProductCommand(ProductPostDto request,  ProductRepository repo)
         {
             _request = request;
-            _uow = uow;
+            this.repo = repo;
         }
 
         public async Task Execute()
@@ -27,8 +29,23 @@ namespace DP424.Web.Command
             }
 
             // Use the Prototype Pattern to create a clone of the current ProductPostDto object,
+
+            /*var product = new Product
+            {
+                Name =  _request.Name,
+                Price = _request.Price,
+                Description  = _request.Description,
+                Category = _request.Category,
+                Image = _request.Image,
+            }*/
             var product = _request.clone(ImgUrl);
-            await _uow.ProductRepository.Create(product);
+
+
+            await repo.Create(product);
+
+            // Usage of anti-pattern 
+            await repo.SendProductCreationNotification(product, "created");
+
         }
     }
 

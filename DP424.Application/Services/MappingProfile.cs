@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using DP424.Domain.Dtos;
 using DP424.Domain.Models;
+using DP424.Domain.Prototype;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,5 +1,5 @@
-﻿using DP424.Domain.Dtos;
-using DP424.Domain.Models;
+﻿using DP424.Domain.Models;
+using DP424.Domain.Prototype;
 using DP424.UI.ApiAdaptor;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -7,29 +7,25 @@ using System.Text;
 
 namespace DP424.UI.Controllers
 {
+    // This controller calling the adapter concrete class to fetch and send the data in a valid format
     public class ProductController:Controller
     {
+
         Uri baseAddress = new Uri("https://localhost:7083/api");
         private readonly HttpClient _httpClient;
-        private readonly IProductApiAdpator _apdator;
-        
-        public ProductController(IProductApiAdpator apdator)
+        private readonly IProductApiAdpater _apdator;
+
+        public ProductController(IProductApiAdpater apdator)
         {
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;
             _apdator = apdator;
         }
+
         public async Task<IActionResult> Index()
         {
-            /*List<Product> products = new List<Product>();
-            HttpResponseMessage response = _httpClient.GetAsync(_httpClient.BaseAddress +
-                "/product/products").Result;
-
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                products = JsonConvert.DeserializeObject<List<Product>>(data);
-            }*/
+            // Calling the GetProducts method to fetch the data
+            // that converted from json to List of product
             var products = await _apdator.GetProductsAsync();
             return View(products);
         }

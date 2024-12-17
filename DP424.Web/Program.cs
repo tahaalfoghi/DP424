@@ -1,7 +1,7 @@
-using DP424.Application.Repo.Abstract;
+//using DP424.Application.Repo.Abstract;
 using DP424.Application.Repo.Implementation;
 using DP424.Application.Services;
-using DP424.Application.UnitOfWork;
+
 using DP424.Infrastructure;
 using DP424.Web.Command;
 using Microsoft.EntityFrameworkCore;
@@ -19,8 +19,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(op => op.UseMySql(constr, ServerVersion.AutoDetect(constr)));
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ProductRepository>();
 builder.Services.AddScoped<CommandHandler>();
 
 var app = builder.Build();

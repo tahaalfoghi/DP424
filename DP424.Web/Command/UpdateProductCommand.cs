@@ -1,22 +1,21 @@
-﻿using DP424.Application.UnitOfWork;
-using DP424.Domain.Dtos;
+﻿using DP424.Application.Repo.Implementation;
+using DP424.Domain.Prototype;
 
 namespace DP424.Web.Command
 {
+    // Concrete Command
     // Command Pattern : Execute Update product
 
     public class UpdateProductCommand : ICommand
     {
         private readonly int _id;
         private readonly ProductPostDto _request;
-        private readonly IUnitOfWork _uow;
-     
+        private readonly ProductRepository repo;
 
-        public UpdateProductCommand(int id, ProductPostDto request, IUnitOfWork uow)
-        {
+        public UpdateProductCommand(int id, ProductPostDto request,ProductRepository repo)     {
             _id = id;
             _request = request;
-            _uow = uow;
+            this.repo = repo;
         }
 
         public async Task Execute()
@@ -33,7 +32,11 @@ namespace DP424.Web.Command
 
             // Use the Prototype Pattern to create a clone of the current ProductPostDto object,
             var product = _request.clone(ImgUrl);
-            await _uow.ProductRepository.Update(_id, product);
+            await repo.Update(_id, product);
+
+            // Usage of anti-pattern 
+            await repo.SendProductUpdateNotification(product, "updated");
+
         }
     }
 
