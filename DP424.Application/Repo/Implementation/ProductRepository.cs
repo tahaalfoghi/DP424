@@ -8,7 +8,6 @@ namespace DP424.Application.Repo.Implementation
     public class ProductRepository : IProductRepository
     {
         private readonly AppDbContext context;
-
         public ProductRepository(AppDbContext context)
         {
             this.context = context;
@@ -16,7 +15,7 @@ namespace DP424.Application.Repo.Implementation
 
         public async Task Create(Product entity)
         {
-           context.Products.Add(entity);
+            context.Products.Add(entity);
             await context.SaveChangesAsync();
         }
 

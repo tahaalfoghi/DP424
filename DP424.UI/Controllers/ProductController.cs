@@ -11,9 +11,9 @@ namespace DP424.UI.Controllers
     {
         Uri baseAddress = new Uri("https://localhost:7083/api");
         private readonly HttpClient _httpClient;
-        private readonly IProductAdpator _apdator;
+        private readonly IProductApiAdpator _apdator;
         
-        public ProductController(IProductAdpator apdator)
+        public ProductController(IProductApiAdpator apdator)
         {
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;

@@ -2,21 +2,24 @@
 using DP424.Application.UnitOfWork;
 using DP424.Domain.Dtos;
 using DP424.Domain.Models;
+using DP424.Web.Command;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DP424.Web.Controllers
 {
+    // Command pattern implemented in POST,PUT,DELETE methods
     [ApiController]
     [Route("api/[controller]")]
     public class ProductController : ControllerBase
     {
         private readonly IUnitOfWork uow;
         private readonly IMapper mapper;
-
-        public ProductController(IUnitOfWork uow, IMapper mapper)
+        private readonly CommandHandler commandHandler;
+        public ProductController(IUnitOfWork uow, IMapper mapper, CommandHandler commandHandler)
         {
             this.uow = uow;
             this.mapper = mapper;
+            this.commandHandler = commandHandler;
         }
         [HttpGet]
         [Route("products")]
@@ -44,26 +47,12 @@ namespace DP424.Web.Controllers
             if (!ModelState.IsValid)
                 return BadRequest("Inavlid model");
 
-            string? ImgUrl = string.Empty;
-            if (request.Image is not null)
-            {
-                var path = Path.Combine("wwwroot", "Images", request.Image.FileName);
-                using var stream = new FileStream(path, FileMode.Create);
-                await request.Image.CopyToAsync(stream);
-                ImgUrl = $"/Images/{request.Image.FileName}";
-            }
-            var product = new Product
-            {
-                Name = request.Name,
-                Description = request.Description,
-                Price = request.Price,
-                Image = ImgUrl,
-                Category = request.Category
-            };
-            //var product = mapper.Map<Product>(request); 
-            await uow.ProductRepository.Create(product);
+            // Command pattern 
+            // Create a new product using the command pattern
+            var createCommand = new CreateProductCommand(request,uow);
+            await commandHandler.ExecuteCommand(createCommand);
 
-            return CreatedAtAction(nameof(CreateProduct), new { productId = product.Id }, product);
+            return CreatedAtAction(nameof(CreateProduct), new { productId = request.Id }, request);
         }
         [HttpDelete]
         [Route("{id:int}")]
@@ -72,10 +61,10 @@ namespace DP424.Web.Controllers
             if (id <= 0)
                 return BadRequest($"Invalid request for id:{id}");
 
-            var product = await uow.ProductRepository.GetById(id);
-            if (product is null)
-                return NotFound($"Product with id:{id} is not found");
-            await uow.ProductRepository.Delete(id);
+            // Command pattern 
+            // Delete an existing product using the command pattern
+            var deleteCommand = new DeleteProductCommand(id,uow);
+            await commandHandler.ExecuteCommand(deleteCommand);
 
             return Ok("Product deleted successfully");
         }
@@ -86,28 +75,11 @@ namespace DP424.Web.Controllers
             if (id <= 0 || !ModelState.IsValid)
                 return BadRequest("Invalid request");
 
-            var product = await uow.ProductRepository.GetById(id);
-            if(product is null)
-                return NotFound();
+            // Command pattern
+            // Updates an existing product using the Command Pattern.
+            var updateCommand =  new UpdateProductCommand(id,request,uow);
+            await commandHandler.ExecuteCommand(updateCommand);
 
-          
-            string? ImgUrl = string.Empty;
-            if (request.Image is not null)
-            {
-                var path = Path.Combine("wwwroot", "Images", request.Image.FileName);
-                using var stream = new FileStream(path, FileMode.Create);
-                await request.Image.CopyToAsync(stream);
-                ImgUrl = $"/Images/{request.Image.FileName}";
-            }
-            product = new Product
-            {
-                Name = request.Name,
-                Description = request.Description,
-                Price = request.Price,
-                Image = ImgUrl,
-                Category = request.Category
-            };
-            await uow.ProductRepository.Update(id, product);
             return Ok("Product updated successfully");
         }
     }

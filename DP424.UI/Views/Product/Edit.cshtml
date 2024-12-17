@@ -4,7 +4,6 @@
 
 <form asp-action="Edit" asp-controller="Product" method="post" enctype="multipart/form-data" class="form">
     <input type="hidden" asp-for="Id" />
-
     <div>
         <label asp-for="Name"></label>
         <input class="form-control" asp-for="Name" />
@@ -31,7 +30,7 @@
 
     <div>
         <label>Image</label>
-        <input class="form-control" type="file" name="Image" />
+        <input class="form-control" type="file"  name="Image" />
     </div>
 
     <button class="btn btn-primary mt-3" type="submit">Save</button>
