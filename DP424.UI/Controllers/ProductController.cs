@@ -84,6 +84,7 @@ namespace DP424.UI.Controllers
                     Description = product.Description,
                     Price = product.Price,
                     Category = product.Category,
+                    ImageUrl = product.Image
                 };
 
                 return View(productDto);
@@ -95,35 +96,7 @@ namespace DP424.UI.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(ProductPostDto product, int id)
         {
-            /*if (!ModelState.IsValid)
-                return View(product);
-
-            var formData = new MultipartFormDataContent();
-            formData.Add(new StringContent(product.Name), "Name");
-            formData.Add(new StringContent(product.Description), "Description");
-            formData.Add(new StringContent(product.Price.ToString()), "Price");
-            formData.Add(new StringContent(product.Category), "Category");
-
-            if (product.Image != null)
-            {
-                var imageStream = product.Image.OpenReadStream();
-                formData.Add(new StreamContent(imageStream), "Image", product.Image.FileName);
-            }
-
-            try
-            {
-                var response = await _httpClient.PutAsync($"/api/product/update/{id}", formData);
-                if (response.IsSuccessStatusCode)
-                    return RedirectToAction("Index");
-                else
-                    ModelState.AddModelError("", "Failed to update product");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", $"An error occurred: {ex.Message}");
-            }
-
-            return View(product);*/
+            
             if (!ModelState.IsValid)
                 return View(product);
 
